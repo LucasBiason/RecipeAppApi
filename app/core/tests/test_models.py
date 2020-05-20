@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 from core import models
 
-def sample_user(email="test@londonappdev.com", password="testpass"):
+def sample_user(email="test@recipeapp.com", password="testpass"):
     ''' Create sample user '''
     return get_user_model().objects.create_user(email, password)
 
@@ -11,7 +11,7 @@ class ModelTests(TestCase):
 
     def test_create_user_with_email_successful(self):
         """ Test creating a new an email is sucessul"""
-        email = "test@londonappdev.com"
+        email = "test@recipeapp.com"
         password = "testpass123"
         user = get_user_model().objects.create_user(
             email = email,
@@ -23,7 +23,7 @@ class ModelTests(TestCase):
 
     def test_new_user_normalize(self):
         """ teste the email for a new user is normalize """
-        email = "test@LONDONAPPDEV.com"
+        email = "test@recipeapp.com"
         password = "testpass123"
         user = get_user_model().objects.create_user(
             email = email,
@@ -40,7 +40,7 @@ class ModelTests(TestCase):
     def test_create_new_superuser(self):
         """ test creating a new superuser """
         user = get_user_model().objects.create_superuser(
-            "test@londonappdev.com",
+            "test@recipeapp.com",
             'test123'
         )
         self.assertTrue(user.is_superuser)

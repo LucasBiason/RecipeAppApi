@@ -1,4 +1,4 @@
-import os
+import os, json
 from decouple import config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,6 +60,9 @@ DATABASES = {
         'USER': os.environ.get('DB_USER') or config('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASS') or config('DB_PASS'),
         'PORT': config('DB_PORT', default='5432'),
+        'OPTIONS': json.loads(
+            os.getenv('DATABASE_OPTIONS', '{}')
+        ),
     }
 }
 
@@ -88,6 +91,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = 'core.User'
+
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'core.User'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static_collected/")

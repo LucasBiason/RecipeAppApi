@@ -22,7 +22,7 @@ class PublicUserApiTests(TestCase):
     def test_create_valid_user_success(self):
         ''' test creating user with valid payload is successful '''
         payload = {
-            'email': 'test@londonappev.com',
+            'email': 'test@recipeapp.com',
             'password': 'testpass',
             'name': 'test name',
         }
@@ -35,7 +35,7 @@ class PublicUserApiTests(TestCase):
     def test_user_exists(self):
         ''' Test creating user that already exists fails '''
         payload = {
-            'email': 'test@londonappev.com',
+            'email': 'test@recipeapp.com',
             'password': 'testpass',
             'name': 'test name',
         }
@@ -47,7 +47,7 @@ class PublicUserApiTests(TestCase):
     def test_password_too_short(self):
         ''' test that the password must be more than 5 characters '''
         payload = {
-            'email': 'test@londonappev.com',
+            'email': 'test@recipeapp.com',
             'password': 'pw',
             'name': 'test name',
         }
@@ -59,7 +59,7 @@ class PublicUserApiTests(TestCase):
     def test_create_token_for_user(self):
         ''' teste create a token is created for the user '''
         payload = {
-            'email': 'test@londonappev.com',
+            'email': 'test@recipeapp.com',
             'password': 'testpass',
         }
         create_user(**payload)
@@ -70,9 +70,9 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_invalid_credentials(self):
         ''' test that tokenis notcreated if invalid credentialsare given '''
-        create_user(email='test@londonappev.com', password='testpass')
+        create_user(email='test@recipeapp.com', password='testpass')
         payload = {
-            'email': 'test@londonappev.com',
+            'email': 'test@recipeapp.com',
             'password': 'wrong',
         }
         res = self.client.post(TOKEN_URL, payload)
@@ -82,7 +82,7 @@ class PublicUserApiTests(TestCase):
     def test_create_token_no_user(self):
         ''' test that token is nt created if user doesn't exists '''
         payload = {
-            'email': 'testnot_exists@londonappev.com',
+            'email': 'testnot_exists@recipeapp.com',
             'password': 'wrong',
         }
         res = self.client.post(TOKEN_URL, payload)
@@ -109,7 +109,7 @@ class PrivateUserApiTests(TestCase):
 
     def setUp(self):
         self.user = create_user(
-            email = 'test@londonappev.com',
+            email = 'test@recipeapp.com',
             password = 'testpass',
             name = 'name'
         )
