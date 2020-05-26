@@ -95,9 +95,12 @@ USE_TZ = True
 AUTH_USER_MODEL = 'core.User'
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/vol/web/static'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/vol/web/media'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static_collected/")
