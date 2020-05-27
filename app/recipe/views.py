@@ -8,42 +8,42 @@ from core.models import Tag, Ingredient, Recipe
 from recipe import serializers
 
 
-class TagViewSet(viewsets.GenericViewSet, 
+class BaseRecipeAttrViewSet(viewsets.GenericViewSet, 
                  mixins.ListModelMixin,
                  mixins.CreateModelMixin):
-    ''' Manage tags in the database
+    ''' Base viewset for user owned
     '''
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, )
-    queryset = Tag.objects.all()
-    serializer_class = serializers.TagSerializer
-
+    
     def get_queryset(self):
         ''' Return objects for the current authenticated user only '''
-        return self.queryset.filter(user=self.request.user)
+        assigned_only = bool(
+            int(self.request.query_params.get('assigned_only', 0))
+        )
+        queryset = self.queryset.filter(user=self.request.user)
+        if  assigned_only:
+            queryset = queryset.filter(recipe__isnull=False)
+            
+        return queryset.order_by('-name').distinct()
     
     def perform_create(self, serializer):
         ''' Create a new tag '''
         serializer.save(user=self.request.user)
+        
+class TagViewSet(BaseRecipeAttrViewSet):
+    ''' Manage tags in the database
+    '''
+    queryset = Tag.objects.all()
+    serializer_class = serializers.TagSerializer
 
 
-class IngredientViewSet(viewsets.GenericViewSet, 
-                 mixins.ListModelMixin,
-                 mixins.CreateModelMixin):
+class IngredientViewSet(BaseRecipeAttrViewSet):
     ''' Manage ingredient in the database
     '''
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, )
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
 
-    def get_queryset(self):
-        ''' Return objects for the current authenticated user only '''
-        return self.queryset.filter(user=self.request.user)
-    
-    def perform_create(self, serializer):
-        ''' Create a new ingredient '''
-        serializer.save(user=self.request.user)
 
 class RecipeViewSet(viewsets.ModelViewSet):
     ''' Manage reccipes in the database
@@ -52,10 +52,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, )
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
-
+    
+    def _params_to_ints(self, qs):
+        ''' Convert a list of string IDs to a list of integers '''
+        return [ int(str_id) for str_id in qs.split(',')]
+    
     def get_queryset(self):
         ''' Return objects for the current authenticated user only '''
-        return self.queryset.filter(user=self.request.user)
+        tags = self.request.query_params.get('tags')
+        ingredients = self.request.query_params.get('ingredients')
+        queryset = self.queryset.filter(user=self.request.user)
+        
+        if tags:
+            tag_ids = self._params_to_ints(tags)
+            queryset = queryset.filter(tags__id__in=tag_ids)
+        
+        if ingredients:
+            ingredient_ids = self._params_to_ints(ingredients)
+            queryset = queryset.filter(ingredients__id__in=ingredient_ids)
+            
+        return queryset
     
     def get_serializer_class(self):
         ''' Return appropiate serializer class'''
