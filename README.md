@@ -20,3 +20,4 @@ and log with super user created.
 docker-compose run app sh -c "python manage.py test"  // Testing the app
 docker-compose run app sh -c "python manage.py runserver 0.0.0.0:8000"
 ```
+
